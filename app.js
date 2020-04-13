@@ -56,6 +56,7 @@ function customHttp() {
 //* Init http module
 const http = customHttp();
 
+//! servise for server
 const newsServise = (function () {
   const apiKey = "b74aa85de1074e34b0f1e27a5f6719cb";
   const apiUrl = "https://newsapi.org/v2";
@@ -73,6 +74,17 @@ const newsServise = (function () {
   };
 })();
 
+//! elemets UI
+const form = document.forms["newsControls"];
+const countrySelect = form.elements["country"];
+const searchInput = form.elements["search"];
+
+//* event listener for form
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  loadNews();
+});
+
 //*  init selects
 document.addEventListener("DOMContentLoaded", function () {
   M.AutoInit();
@@ -81,17 +93,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //* load news function
 function loadNews() {
-  newsServise.topHeadlines("ru", onGetResponse);
+  const country = countrySelect.value;
+  const searchText = searchInput.value;
+
+  if (!searchText) {
+    newsServise.topHeadlines(country, onGetResponse);
+  } else {
+    newsServise.everything(searchText, onGetResponse);
+  }
 }
 
 //* function on get response from server
 function onGetResponse(err, res) {
+  if (err) {
+    showAlert(err, "error-msg");
+    return;
+  }
+
   renderNews(res.articles);
 }
 
 //* function render news
 function renderNews(news) {
   const newsContainer = document.querySelector(".news-container .row");
+  if(newsContainer.children.length){
+    clearContainer(newsContainer)
+  }
   let fragment = "";
 
   news.forEach((newsItem) => {
@@ -100,6 +127,16 @@ function renderNews(news) {
   });
 
   newsContainer.insertAdjacentHTML("afterbegin", fragment);
+}
+
+//* function for cear container
+function clearContainer(container) {
+  let child = container.lastElementChild;
+
+  while (child) {
+    container.removeChild(child);
+    child = container.lastElementChild;
+  }
 }
 
 //* function tamplate news item
@@ -120,4 +157,9 @@ function tamplateNewsItem({ description, title, url, urlToImage }) {
       </div>
     </div>
 `;
+}
+
+//* function show alert
+function showAlert(msg, type = "success") {
+  M.toast({ html: msg, classes: type });
 }
