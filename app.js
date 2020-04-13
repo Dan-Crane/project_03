@@ -62,9 +62,9 @@ const newsServise = (function () {
   const apiUrl = "https://newsapi.org/v2";
 
   return {
-    topHeadlines(country = "ru", cb) {
+    topHeadlines(country = "ru", category="techology", cb) {
       http.get(
-        `${apiUrl}/top-headlines?country=${country}&category=technology&apiKey=${apiKey}`,
+        `${apiUrl}/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}`,
         cb
       );
     },
@@ -77,6 +77,7 @@ const newsServise = (function () {
 //! elemets UI
 const form = document.forms["newsControls"];
 const countrySelect = form.elements["country"];
+const categorySelect = form.elements["category"];
 const searchInput = form.elements["search"];
 
 //* event listener for form
@@ -96,10 +97,11 @@ function loadNews() {
   showLoader()
 
   const country = countrySelect.value;
+  const category = categorySelect.value;
   const searchText = searchInput.value;
 
   if (!searchText) {
-    newsServise.topHeadlines(country, onGetResponse);
+    newsServise.topHeadlines(country, category, onGetResponse);
   } else {
     newsServise.everything(searchText, onGetResponse);
   }
@@ -149,7 +151,7 @@ function tamplateNewsItem({ description, title, url, urlToImage }) {
     <div class="col s12">
       <div class="card">
         <div class="card-image">
-          <img src="${urlToImage || ""}">
+          <img src="${urlToImage}">
           <span class="card-title">${title || ""}</span>
         </div>
         <div class="card-content">
