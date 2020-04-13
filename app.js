@@ -93,6 +93,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //* load news function
 function loadNews() {
+  showLoader()
+
   const country = countrySelect.value;
   const searchText = searchInput.value;
 
@@ -105,6 +107,8 @@ function loadNews() {
 
 //* function on get response from server
 function onGetResponse(err, res) {
+  removeLoader()
+
   if (err) {
     showAlert(err, "error-msg");
     return;
@@ -116,8 +120,8 @@ function onGetResponse(err, res) {
 //* function render news
 function renderNews(news) {
   const newsContainer = document.querySelector(".news-container .row");
-  if(newsContainer.children.length){
-    clearContainer(newsContainer)
+  if (newsContainer.children.length) {
+    clearContainer(newsContainer);
   }
   let fragment = "";
 
@@ -162,4 +166,22 @@ function tamplateNewsItem({ description, title, url, urlToImage }) {
 //* function show alert
 function showAlert(msg, type = "success") {
   M.toast({ html: msg, classes: type });
+}
+
+//* function show loader
+function showLoader() {
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    `<div class="progress">
+      <div class="indeterminate"></div>
+    </div>`
+  );
+}
+
+//* function remove loader
+function removeLoader(){
+  let loader = document.querySelector('.progress')
+  if(loader){
+    loader.remove()
+  }
 }
