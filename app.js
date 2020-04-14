@@ -62,7 +62,7 @@ const newsServise = (function () {
   const apiUrl = "https://newsapi.org/v2";
 
   return {
-    topHeadlines(country = "ru", category="techology", cb) {
+    topHeadlines(country = "ru", category = "techology", cb) {
       http.get(
         `${apiUrl}/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}`,
         cb
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //* load news function
 function loadNews() {
-  showLoader()
+  showLoader();
 
   const country = countrySelect.value;
   const category = categorySelect.value;
@@ -109,12 +109,22 @@ function loadNews() {
 
 //* function on get response from server
 function onGetResponse(err, res) {
-  removeLoader()
+  removeLoader();
 
   if (err) {
     showAlert(err, "error-msg");
     return;
   }
+
+  if (res.articles.length == 0) {
+    showAlert(
+      `По вашему запросу: ${searchInput.value} ничего не найдено`,
+      "error-msg"
+    );
+    return;
+  }
+
+  console.log(res);
 
   renderNews(res.articles);
 }
@@ -151,7 +161,7 @@ function tamplateNewsItem({ description, title, url, urlToImage }) {
     <div class="col s12">
       <div class="card">
         <div class="card-image">
-          <img src="${urlToImage}">
+          <img src="${urlToImage || "https://sovet-ingenera.com/wp-content/uploads/2019/08/zaglyshka_na_gazovyu_tryby_foto4.jpg"}">
           <span class="card-title">${title || ""}</span>
         </div>
         <div class="card-content">
@@ -181,9 +191,9 @@ function showLoader() {
 }
 
 //* function remove loader
-function removeLoader(){
-  let loader = document.querySelector('.progress')
-  if(loader){
-    loader.remove()
+function removeLoader() {
+  let loader = document.querySelector(".progress");
+  if (loader) {
+    loader.remove();
   }
 }
